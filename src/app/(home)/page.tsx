@@ -21,6 +21,10 @@ export default async function Home({ searchParams }: PropsType) {
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
 
   return (
+    <h1>Home Page</h1>
+  )
+
+  return (
     <>
       <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup />

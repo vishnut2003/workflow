@@ -10,7 +10,7 @@ import { Header } from "@/components/Layouts/header";
 import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
-import { Providers } from "./providers";
+import { Providers } from "../providers";
 import { headers } from "next/headers";
 import DefaultLayout from "@/layouts/DefaultLayout";
 
@@ -29,13 +29,38 @@ const plainTemplateUrls = [
 
 export default async function RootLayout({ children }: PropsWithChildren) {
 
+  // Return plane template if Login page or Register page
+  const headerList = await headers();
+  const currentUrl = headerList.get("x-url") || headerList.get("referer");
+  const url = URL.canParse(currentUrl || "") && new URL(currentUrl || "");
+  
+  if (url && plainTemplateUrls.includes(url.pathname)) {
+    return (
+      <DefaultLayout>
+        {children}
+      </DefaultLayout>
+    )
+  }
+
   // Return Dashboard Layout
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <main className="isolate mx-auto w-full max-w-screen-2xl overflow-hidden p-4 md:p-6 2xl:p-10">
-          {children}
-        </main>
+        <Providers>
+          <NextTopLoader color="#5750F1" showSpinner={false} />
+
+          <div className="flex min-h-screen">
+            <Sidebar />
+
+            <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
+              <Header />
+
+              <main className="isolate mx-auto w-full max-w-screen-2xl overflow-hidden p-4 md:p-6 2xl:p-10">
+                {children}
+              </main>
+            </div>
+          </div>
+        </Providers>
       </body>
     </html>
   );
