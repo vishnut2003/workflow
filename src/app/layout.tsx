@@ -11,6 +11,8 @@ import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { Providers } from "./providers";
+import { headers } from "next/headers";
+import DefaultLayout from "@/layouts/DefaultLayout";
 
 export const metadata: Metadata = {
   title: {
@@ -21,7 +23,26 @@ export const metadata: Metadata = {
     "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
 };
 
-export default function RootLayout({ children }: PropsWithChildren) {
+const plainTemplateUrls = [
+  "/auth/sign-in",
+]
+
+export default async function RootLayout({ children }: PropsWithChildren) {
+
+  // Return plane template if Login page or Register page
+  const headerList = await headers();
+  const currentUrl = headerList.get("x-url") || headerList.get("referer");
+  const url = URL.canParse(currentUrl || "") && new URL(currentUrl || "");
+  
+  if (url && plainTemplateUrls.includes(url.pathname)) {
+    return (
+      <DefaultLayout>
+        {children}
+      </DefaultLayout>
+    )
+  }
+
+  // Return Dashboard Layout
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
