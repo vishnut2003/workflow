@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
+import { signIn } from "next-auth/react";
 
 export default function SigninWithPassword() {
   const [data, setData] = useState({
@@ -21,11 +22,16 @@ export default function SigninWithPassword() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // You can remove this code block
     setLoading(true);
+
+    await signIn("email", {
+      email: data.email,
+      password: data.password,
+    });
 
     setTimeout(() => {
       setLoading(false);
